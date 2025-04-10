@@ -22,3 +22,16 @@ def encryptage(valeur):
                                                                                                                                                      
 if __name__ == "__main__":
   app.run(debug=True)
+
+@app.route('/decrypt/<message>')
+def decrypt(message):
+    try:
+        key = session.get('key')
+        if not key:
+            return "Clé manquante dans la session. Veuillez d'abord chiffrer quelque chose.", 400
+        f = Fernet(key)
+        decrypted_message = f.decrypt(message.encode()).decode()
+        return f"Texte déchiffré : {decrypted_message}"
+    except Exception as e:
+        return f"Erreur lors du déchiffrement : {str(e)}", 500
+
