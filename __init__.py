@@ -34,4 +34,31 @@ def decrypt(message):
         return f"Texte déchiffré : {decrypted_message}"
     except Exception as e:
         return f"Erreur lors du déchiffrement : {str(e)}", 500
+def get_fernet_key(password):
+    key = hashlib.sha256(password.encode()).digest()
+    return base64.urlsafe_b64encode(key)
+
+@app.route('/encrypt_custom/<key>/<message>')
+def encrypt_custom(key, message):
+    try:
+        fernet_key = get_fernet_key(key)
+        f = Fernet(fernet_key)
+        encrypted = f.encrypt(message.encode()).decode()
+        return f"Texte chiffré avec clé perso : {encrypted}"
+    except Exception as e:
+        return f"Erreur de chiffrement : {str(e)}"
+
+@app.route('/decrypt_custom/<key>/<message>')
+def decrypt_custom(key, message):
+    try:
+        fernet_key = get_fernet_key(key)
+        f = Fernet(fernet_key)
+        decrypted = f.decrypt(message.encode()).decode()
+        return f"Texte déchiffré avec clé perso : {decrypted}"
+    except Exception as e:
+        return f"Erreur de déchiffrement : {str(e)}"
+
+# Lancement de l'app Flask
+if __name__ == "__main__":
+    app.run(debug=True)
 
